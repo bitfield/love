@@ -1,0 +1,2 @@
+! go run main.go
+stderr 'panic: bookToString: unexpected result'

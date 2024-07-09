@@ -1,0 +1,4 @@
+go run main.go
+stdout 'Books in stock:'
+stdout '''Code For Your Life'', by John Arundel'
+stdout '''For the Love of Go'', by John Arundel'

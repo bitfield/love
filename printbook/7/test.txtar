@@ -1,0 +1,3 @@
+go run main.go
+stdout 'Books in stock:'
+stdout 'Sea Room by Adam Nicolson - 2 copies'

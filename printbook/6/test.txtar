@@ -1,0 +1,4 @@
+go run main.go
+stdout 'Books in stock:'
+stdout 'The City & The City by China Miéville'
+stdout 'The Sugar Barons by Matthew Parker'
