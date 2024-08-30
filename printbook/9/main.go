@@ -13,5 +13,10 @@ func bookToString(b Book) string {
 }
 
 func main() {
-	fmt.Println("It's all good!")
+	book := Book{
+		Title:  "Engineering in Plain Sight",
+		Author: "Grady Hillhouse",
+		Copies: 2,
+	}
+	fmt.Println(bookToString(book))
 }

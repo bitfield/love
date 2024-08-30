@@ -11,10 +11,12 @@ func TestGetAllBooks(t *testing.T) {
 		{
 			Title:  "In the Company of Cheerful Ladies",
 			Author: "Alexander McCall Smith",
+			Copies: 1,
 		},
 		{
 			Title:  "White Heat",
 			Author: "Dominic Sandbrook",
+			Copies: 2,
 		},
 	}
 	got := GetAllBooks()

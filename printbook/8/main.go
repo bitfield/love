@@ -14,7 +14,7 @@ func main() {
 }
 
 func bookToString(b Book) string {
-	return ""
+	return fmt.Sprintf("%v by %v - %v copies", b.Title, b.Author, b.Copies)
 }
 
 func TestBookToStringReturnsExpectedValue() {
