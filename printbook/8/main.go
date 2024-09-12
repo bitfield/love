@@ -9,7 +9,7 @@ type Book struct {
 }
 
 func main() {
-	TestBookToStringReturnsExpectedValue()
+	TestBookToString_FormatsBookInfoAsString()
 	fmt.Println("It's all good!")
 }
 
@@ -17,7 +17,7 @@ func bookToString(b Book) string {
 	return fmt.Sprintf("%v by %v - %v copies", b.Title, b.Author, b.Copies)
 }
 
-func TestBookToStringReturnsExpectedValue() {
+func TestBookToString_FormatsBookInfoAsString() {
 	input := Book{
 		Title:  "Sea Room",
 		Author: "Adam Nicolson",

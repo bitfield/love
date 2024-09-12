@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGetAllBooks(t *testing.T) {
+func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 	t.Parallel()
 	want := []Book{
 		{
