@@ -1,0 +1,3 @@
+go test
+go run ./print
+stdout 'Engineering in Plain Sight by Grady Hillhouse \(copies: 2\)'

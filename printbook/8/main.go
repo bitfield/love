@@ -13,7 +13,7 @@ func main() {
 	fmt.Println("It's all good!")
 }
 
-func bookToString(b Book) string {
+func BookToString(b Book) string {
 	return fmt.Sprintf("%v by %v - %v copies", b.Title, b.Author, b.Copies)
 }
 
@@ -24,8 +24,8 @@ func TestBookToString_FormatsBookInfoAsString() {
 		Copies: 2,
 	}
 	want := "Sea Room by Adam Nicolson - 2 copies"
-	got := bookToString(input)
+	got := BookToString(input)
 	if want != got {
-		panic("bookToString: unexpected result")
+		panic("BookToString: unexpected result")
 	}
 }

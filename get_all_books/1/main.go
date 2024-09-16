@@ -8,7 +8,7 @@ type Book struct {
 	Copies int
 }
 
-func bookToString(b Book) string {
+func BookToString(b Book) string {
 	return fmt.Sprintf("%v by %v (copies: %v)", b.Title, b.Author, b.Copies)
 }
 
@@ -32,6 +32,6 @@ func GetAllBooks() []Book {
 func main() {
 	books := GetAllBooks()
 	for _, book := range books {
-		fmt.Println(bookToString(book))
+		fmt.Println(BookToString(book))
 	}
 }

@@ -4,7 +4,6 @@ import "fmt"
 
 func main() {
 	fmt.Println("Books in stock:")
-
 	var title = "The City & The City"
 	var author = "China Miéville"
 	printBook(title, author)

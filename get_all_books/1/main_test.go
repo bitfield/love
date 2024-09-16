@@ -6,7 +6,6 @@ import (
 )
 
 func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
-	t.Parallel()
 	want := []Book{
 		{
 			Title:  "In the Company of Cheerful Ladies",
@@ -21,6 +20,6 @@ func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 	}
 	got := GetAllBooks()
 	if !slices.Equal(want, got) {
-		t.Errorf("want %#v, got %#v", want, got)
+		t.Fatalf("want %#v, got %#v", want, got)
 	}
 }
