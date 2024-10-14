@@ -1,0 +1,2 @@
+go run main.go
+stdout '[{In the Company of Cheerful Ladies Alexander McCall Smith 0} {White Heat Dominic Sandbrook 0}]'
