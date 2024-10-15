@@ -1,9 +1,3 @@
-go test
-
-go run ./cmd/list
-stdout 'In the Company of Cheerful Ladies by Alexander McCall Smith \(copies: 1\)'
-stdout 'White Heat by Dominic Sandbrook \(copies: 2\)'
-
-go run ./cmd/find
-stdout 'White Heat by Dominic Sandbrook \(copies: 2\)'
-
+go run main.go
+stdout 'Books in stock:'
+stdout '''Code For Your Life'', by John Arundel'

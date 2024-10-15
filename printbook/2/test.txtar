@@ -1,3 +1,0 @@
-go run main.go
-stdout 'Books in stock:'
-stdout '''Code For Your Life'', by John Arundel'
