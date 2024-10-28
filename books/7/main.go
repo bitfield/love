@@ -16,6 +16,8 @@ func main() {
 		Copies: 2,
 	}
 	printBook(b)
+	// Output:
+	// Sea Room by Adam Nicolson - 2 copies
 }
 
 func printBook(b Book) {
