@@ -1,4 +1,4 @@
 go run main.go
 stdout 'Books in stock:'
-stdout '''Master and Commander'', by Patrick O'Brian'
+stdout '''Master and Commander'', by Patrick O''Brian'
 stdout '''A Morbid Taste for Bones'', by Ellis Peters'
