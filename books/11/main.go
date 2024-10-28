@@ -13,7 +13,7 @@ func BookToString(b Book) string {
 		b.Title, b.Author, b.Copies)
 }
 
-var books = []Book{
+var catalog = []Book{
 	{
 		Title:  "In the Company of Cheerful Ladies",
 		Author: "Alexander McCall Smith",
@@ -27,7 +27,7 @@ var books = []Book{
 }
 
 func GetAllBooks() []Book {
-	return books
+	return catalog
 }
 
 func main() {
