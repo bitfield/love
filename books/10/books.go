@@ -9,5 +9,6 @@ type Book struct {
 }
 
 func BookToString(b Book) string {
-	return fmt.Sprintf("%v by %v (copies: %v)", b.Title, b.Author, b.Copies)
+	return fmt.Sprintf("%v by %v (copies: %v)",
+		b.Title, b.Author, b.Copies)
 }
