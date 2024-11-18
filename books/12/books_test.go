@@ -1,13 +1,14 @@
-package main
+package books_test
 
 import (
+	"books"
 	"slices"
 	"testing"
 )
 
 func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 	t.Parallel()
-	want := []Book{
+	want := []books.Book{
 		{
 			Title:  "In the Company of Cheerful Ladies",
 			Author: "Alexander McCall Smith",
@@ -21,7 +22,7 @@ func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 			ID:     "xyz",
 		},
 	}
-	got := GetAllBooks()
+	got := books.GetAllBooks()
 	if !slices.Equal(want, got) {
 		t.Fatalf("want %#v, got %#v", want, got)
 	}
@@ -29,13 +30,13 @@ func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 
 func TestGetBook_FindsBookInCatalogByID(t *testing.T) {
 	t.Parallel()
-	want := Book{
+	want := books.Book{
 		ID:     "abc",
 		Title:  "In the Company of Cheerful Ladies",
 		Author: "Alexander McCall Smith",
 		Copies: 1,
 	}
-	got, ok := GetBook("abc")
+	got, ok := books.GetBook("abc")
 	if !ok {
 		t.Fatal("book not found")
 	}
@@ -46,7 +47,7 @@ func TestGetBook_FindsBookInCatalogByID(t *testing.T) {
 
 func TestGetBook_ReturnsFalseWhenBookNotFound(t *testing.T) {
 	t.Parallel()
-	_, ok := GetBook("nonexistent ID")
+	_, ok := books.GetBook("nonexistent ID")
 	if ok {
 		t.Fatal("want false for nonexistent ID, got true")
 	}

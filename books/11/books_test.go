@@ -1,12 +1,13 @@
-package main
+package books_test
 
 import (
+	"books"
 	"slices"
 	"testing"
 )
 
 func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
-	want := []Book{
+	want := []books.Book{
 		{
 			Title:  "In the Company of Cheerful Ladies",
 			Author: "Alexander McCall Smith",
@@ -18,7 +19,7 @@ func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 			Copies: 2,
 		},
 	}
-	got := GetAllBooks()
+	got := books.GetAllBooks()
 	if !slices.Equal(want, got) {
 		t.Fatalf("want %#v, got %#v", want, got)
 	}

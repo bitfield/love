@@ -1,4 +1,4 @@
-package main
+package books
 
 import "fmt"
 
@@ -30,8 +30,4 @@ func GetAllBooks() []Book {
 	return catalog
 }
 
-func main() {
-	for _, book := range GetAllBooks() {
-		fmt.Println(BookToString(book))
-	}
-}
+

@@ -23,6 +23,11 @@ func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 		},
 	}
 	got := books.GetAllBooks()
+	got = books.GetAllBooks()
+	got = books.GetAllBooks()
+	got = books.GetAllBooks()
+	got = books.GetAllBooks()
+	got = books.GetAllBooks()
 	if !slices.Equal(want, got) {
 		t.Fatalf("want %#v, got %#v", want, got)
 	}

@@ -1,2 +1,3 @@
-go run main.go
-stdout '[{In the Company of Cheerful Ladies Alexander McCall Smith 0} {White Heat Dominic Sandbrook 0}]'
+go run ./cmd/list
+stdout 'In the Company of Cheerful Ladies by Alexander McCall Smith \(copies: 1\)'
+stdout 'White Heat by Dominic Sandbrook \(copies: 2\)'
