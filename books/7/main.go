@@ -10,12 +10,12 @@ type Book struct {
 
 func main() {
 	fmt.Println("Books in stock:")
-	b := Book{
+	book := Book{
 		Title:  "Sea Room",
 		Author: "Adam Nicolson",
 		Copies: 2,
 	}
-	printBook(b)
+	printBook(book)
 	// Output:
 	// Sea Room by Adam Nicolson - 2 copies
 }
