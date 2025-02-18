@@ -9,9 +9,9 @@ type Book struct {
 	ID     string
 }
 
-func BookToString(b Book) string {
+func BookToString(book Book) string {
 	return fmt.Sprintf("%v by %v (copies: %v)",
-		b.Title, b.Author, b.Copies)
+		book.Title, book.Author, book.Copies)
 }
 
 var catalog = []Book{

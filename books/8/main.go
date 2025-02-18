@@ -13,9 +13,9 @@ func main() {
 	fmt.Println("It's all good!")
 }
 
-func BookToString(b Book) string {
+func BookToString(book Book) string {
 	return fmt.Sprintf("%v by %v - %v copies",
-		b.Title, b.Author, b.Copies)
+		book.Title, book.Author, book.Copies)
 }
 
 func TestBookToString_FormatsBookInfoAsString() {

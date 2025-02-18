@@ -13,9 +13,9 @@ type Book struct {
 	ID     string
 }
 
-func (b Book) String() string {
+func (book Book) String() string {
 	return fmt.Sprintf("%v by %v (copies: %v)",
-		b.Title, b.Author, b.Copies)
+		book.Title, book.Author, book.Copies)
 }
 
 type Catalog map[string]Book

@@ -20,6 +20,6 @@ func main() {
 	// Sea Room by Adam Nicolson - 2 copies
 }
 
-func printBook(b Book) {
-	fmt.Println(b.Title, "by", b.Author, "-", b.Copies, "copies")
+func printBook(book Book) {
+	fmt.Println(book.Title, "by", book.Author, "-", book.Copies, "copies")
 }
