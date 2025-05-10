@@ -52,8 +52,13 @@ func (catalog Catalog) GetBook(ID string) (Book, bool) {
 	return book, ok
 }
 
-func (catalog Catalog) AddBook(book Book) {
+func (catalog Catalog) AddBook(book Book) error {
+	_, ok := catalog[book.ID]
+	if ok {
+		return fmt.Errorf("ID %q already exists", book.ID)
+	}
 	catalog[book.ID] = book
+	return nil
 }
 
 func (catalog Catalog) SetCopies(ID string, copies int) error {
@@ -79,21 +84,4 @@ func (catalog Catalog) Sync(path string) error {
 		return err
 	}
 	return nil
-}
-
-func GetCatalog() Catalog {
-	return Catalog{
-		"abc": {
-			Title:  "In the Company of Cheerful Ladies",
-			Author: "Alexander McCall Smith",
-			Copies: 1,
-			ID:     "abc",
-		},
-		"xyz": {
-			Title:  "White Heat",
-			Author: "Dominic Sandbrook",
-			Copies: 2,
-			ID:     "xyz",
-		},
-	}
 }
