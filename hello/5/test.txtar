@@ -1,0 +1,3 @@
+go run main.go
+stdout -count=10 'Hello from goroutine A!'
+stdout -count=10 'Hello from goroutine B!'

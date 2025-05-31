@@ -3,6 +3,10 @@ package books_test
 import (
 	"books"
 	"cmp"
+	"encoding/json"
+	"io"
+	"net"
+	"net/http"
 	"slices"
 	"testing"
 )
@@ -44,6 +48,15 @@ func TestSyncWritesCatalogDataToFile(t *testing.T) {
 	}
 	got := newCatalog.GetAllBooks()
 	assertTestBooks(t, got)
+}
+
+func TestNewCatalog_CreatesEmptyCatalog(t *testing.T) {
+	t.Parallel()
+	catalog := books.NewCatalog()
+	books := catalog.GetAllBooks()
+	if len(books) > 0 {
+		t.Errorf("want empty catalog, got %#v", books)
+	}
 }
 
 func TestGetBook_FindsBookInCatalogByID(t *testing.T) {
@@ -139,41 +152,87 @@ func TestSetCopies_ReturnsErrorIfCopiesNegative(t *testing.T) {
 func TestSetCopies_OnCatalogModifiesSpecifiedBook(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	book, ok := catalog.GetBook("abc")
-	if !ok {
-		t.Fatal("book not found")
-	}
-	if book.Copies != 1 {
-		t.Fatalf("want 1 copy before change, got %d", book.Copies)
-	}
-	err := catalog.SetCopies("abc", 2)
+	copies, err := catalog.GetCopies("abc")
 	if err != nil {
 		t.Fatal(err)
 	}
-	book, ok = catalog.GetBook("abc")
-	if !ok {
-		t.Fatal("book not found")
+	if copies != 1 {
+		t.Fatalf("want 1 copy before change, got %d", copies)
 	}
-	if book.Copies != 2 {
-		t.Fatalf("want 2 copies after change, got %d", book.Copies)
+	err = catalog.SetCopies("abc", 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	copies, err = catalog.GetCopies("abc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if copies != 2 {
+		t.Fatalf("want 2 copies after change, got %d", copies)
 	}
 }
 
-func getTestCatalog() books.Catalog {
-	return books.Catalog{
-		"abc": {
-			Title:  "In the Company of Cheerful Ladies",
-			Author: "Alexander McCall Smith",
-			Copies: 1,
-			ID:     "abc",
-		},
-		"xyz": {
-			Title:  "White Heat",
-			Author: "Dominic Sandbrook",
-			Copies: 2,
-			ID:     "xyz",
-		},
+func TestSetCopies_IsRaceFree(t *testing.T) {
+	t.Parallel()
+	catalog := getTestCatalog()
+	go func() {
+		for range 100 {
+			catalog.SetCopies("abc", 0)
+		}
+	}()
+	for range 100 {
+		_, err := catalog.GetCopies("abc")
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
+}
+
+func TestAPIServerListsAllBooks(t *testing.T) {
+	t.Parallel()
+	addr := randomLocalAddr(t)
+	srv := books.NewAPIServer(addr, getTestCatalog())
+	defer srv.Close()
+	startServer(srv)
+	url := "http://" + addr + "/api/v1/books"
+	resp, err := http.Get(url)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	data, err := io.ReadAll(io.LimitReader(resp.Body, 1000))
+	if err != nil {
+		t.Fatal(err)
+	}
+	books := []books.Book{}
+	err = json.Unmarshal(data, &books)
+	if err != nil {
+		t.Fatalf("wrong response: %s: %q", err, data)
+	}
+	assertTestBooks(t, books)
+}
+
+func getTestCatalog() *books.Catalog {
+	catalog := books.NewCatalog()
+	err := catalog.AddBook(books.Book{
+		Title:  "In the Company of Cheerful Ladies",
+		Author: "Alexander McCall Smith",
+		Copies: 1,
+		ID:     "abc",
+	})
+	if err != nil {
+		panic(err)
+	}
+	err = catalog.AddBook(books.Book{
+		Title:  "White Heat",
+		Author: "Dominic Sandbrook",
+		Copies: 2,
+		ID:     "xyz",
+	})
+	if err != nil {
+		panic(err)
+	}
+	return catalog
 }
 
 func assertTestBooks(t *testing.T, got []books.Book) {
@@ -198,4 +257,23 @@ func assertTestBooks(t *testing.T, got []books.Book) {
 	if !slices.Equal(want, got) {
 		t.Fatalf("want %#v, got %#v", want, got)
 	}
+}
+
+func randomLocalAddr(t *testing.T) string {
+	t.Helper()
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	return listener.Addr().String()
+}
+
+func startServer(srv *books.APIServer) {
+	go func() {
+		err := srv.ListenAndServe()
+		if err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
 }

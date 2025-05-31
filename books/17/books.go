@@ -35,6 +35,7 @@ func OpenCatalog(path string) (Catalog, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 	catalog := Catalog{}
 	err = json.NewDecoder(file).Decode(&catalog)
 	if err != nil {
@@ -79,6 +80,7 @@ func (catalog Catalog) Sync(path string) error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 	err = json.NewEncoder(file).Encode(catalog)
 	if err != nil {
 		return err
