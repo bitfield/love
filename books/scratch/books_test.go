@@ -200,6 +200,9 @@ func TestAPIServerListsAllBooks(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected status %q", resp.Status)
+	}
 	data, err := io.ReadAll(io.LimitReader(resp.Body, 1000))
 	if err != nil {
 		t.Fatal(err)

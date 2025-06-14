@@ -47,38 +47,18 @@ func OpenCatalog(path string) (*Catalog, error) {
 		return nil, err
 	}
 	defer file.Close()
-	catalog := Catalog{
-		mu:   &sync.RWMutex{},
-		data: map[string]Book{},
-	}
+	catalog := NewCatalog()
 	err = json.NewDecoder(file).Decode(&catalog.data)
 	if err != nil {
 		return nil, err
 	}
-	return &catalog, nil
+	return catalog, nil
 }
 
 func (catalog *Catalog) GetAllBooks() []Book {
 	catalog.mu.RLock()
 	defer catalog.mu.RUnlock()
 	return slices.Collect(maps.Values(catalog.data))
-}
-
-func (catalog *Catalog) GetBook(ID string) (Book, bool) {
-	catalog.mu.RLock()
-	defer catalog.mu.RUnlock()
-	book, ok := catalog.data[ID]
-	return book, ok
-}
-
-func (catalog *Catalog) GetCopies(ID string) (int, error) {
-	catalog.mu.RLock()
-	defer catalog.mu.RUnlock()
-	book, ok := catalog.data[ID]
-	if !ok {
-		return 0, fmt.Errorf("ID %q not found", ID)
-	}
-	return book.Copies, nil
 }
 
 func (catalog *Catalog) Sync(path string) error {
@@ -105,6 +85,23 @@ func (catalog *Catalog) AddBook(book Book) error {
 	}
 	catalog.data[book.ID] = book
 	return nil
+}
+
+func (catalog *Catalog) GetBook(ID string) (Book, bool) {
+	catalog.mu.RLock()
+	defer catalog.mu.RUnlock()
+	book, ok := catalog.data[ID]
+	return book, ok
+}
+
+func (catalog *Catalog) GetCopies(ID string) (int, error) {
+	catalog.mu.RLock()
+	defer catalog.mu.RUnlock()
+	book, ok := catalog.data[ID]
+	if !ok {
+		return 0, fmt.Errorf("ID %q not found", ID)
+	}
+	return book.Copies, nil
 }
 
 func (catalog *Catalog) SetCopies(ID string, copies int) error {

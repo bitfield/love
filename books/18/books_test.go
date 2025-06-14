@@ -173,7 +173,10 @@ func TestSetCopies_IsRaceFree(t *testing.T) {
 	catalog := getTestCatalog()
 	go func() {
 		for range 100 {
-			catalog.SetCopies("abc", 0)
+			err := catalog.SetCopies("abc", 0)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}()
 	for range 100 {

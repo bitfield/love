@@ -3,6 +3,8 @@ package books_test
 import (
 	"books"
 	"cmp"
+	"io"
+	"net/http"
 	"slices"
 	"testing"
 )
@@ -173,7 +175,10 @@ func TestSetCopies_IsRaceFree(t *testing.T) {
 	catalog := getTestCatalog()
 	go func() {
 		for range 100 {
-			catalog.SetCopies("abc", 0)
+			err := catalog.SetCopies("abc", 0)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}()
 	for range 100 {
@@ -181,6 +186,27 @@ func TestSetCopies_IsRaceFree(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
+}
+
+func TestServerListsAllBooks(t *testing.T) {
+	t.Parallel()
+	go func() {
+		err := books.ListenAndServe(":3000", getTestCatalog())
+		if err != nil {
+			panic(err)
+		}
+	}()
+	resp, err := http.Get("http://localhost:3000/")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected status code %d", resp.StatusCode)
+	}
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

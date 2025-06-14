@@ -47,15 +47,12 @@ func OpenCatalog(path string) (*Catalog, error) {
 		return nil, err
 	}
 	defer file.Close()
-	catalog := Catalog{
-		mu:   &sync.RWMutex{},
-		data: map[string]Book{},
-	}
+	catalog := NewCatalog()
 	err = json.NewDecoder(file).Decode(&catalog.data)
 	if err != nil {
 		return nil, err
 	}
-	return &catalog, nil
+	return catalog, nil
 }
 
 func (catalog *Catalog) GetAllBooks() []Book {
