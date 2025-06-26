@@ -3,7 +3,9 @@ package books_test
 import (
 	"books"
 	"cmp"
+	"encoding/json"
 	"io"
+	"net"
 	"net/http"
 	"slices"
 	"testing"
@@ -191,22 +193,65 @@ func TestSetCopies_IsRaceFree(t *testing.T) {
 
 func TestServerListsAllBooks(t *testing.T) {
 	t.Parallel()
+	addr := randomLocalAddr(t)
 	go func() {
-		err := books.ListenAndServe(":3000", getTestCatalog())
+		err := books.ListenAndServe(addr, getTestCatalog())
 		if err != nil {
 			panic(err)
 		}
 	}()
-	resp, err := http.Get("http://localhost:3000/")
+	resp, err := http.Get("http://" + addr + "/v1/list")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("unexpected status code %d", resp.StatusCode)
 	}
+	got := []books.Book{}
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
+	}
+	err = json.Unmarshal(data, &got)
+	if err != nil {
+		t.Fatalf("%v in %q", err, data)
+	}
+	assertTestBooks(t, got)
+}
+
+func TestFindFindsBookByID(t *testing.T) {
+	t.Parallel()
+	addr := randomLocalAddr(t)
+	go func() {
+		err := books.ListenAndServe(addr, getTestCatalog())
+		if err != nil {
+			panic(err)
+		}
+	}()
+	resp, err := http.Get("http://" + addr + "/v1/find/abc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected status code %d", resp.StatusCode)
+	}
+	got := books.Book{}
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = json.Unmarshal(data, &got)
+	if err != nil {
+		t.Fatalf("%v in %q", err, data)
+	}
+	want := books.Book{
+		Title:  "In the Company of Cheerful Ladies",
+		Author: "Alexander McCall Smith",
+		Copies: 1,
+		ID:     "abc",
+	}
+	if want != got {
+		t.Fatalf("want %#v, got %#v", want, got)
 	}
 }
 
@@ -255,4 +300,14 @@ func assertTestBooks(t *testing.T, got []books.Book) {
 	if !slices.Equal(want, got) {
 		t.Fatalf("want %#v, got %#v", want, got)
 	}
+}
+
+func randomLocalAddr(t *testing.T) string {
+	t.Helper()
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer l.Close()
+	return l.Addr().String()
 }
