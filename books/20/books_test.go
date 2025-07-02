@@ -3,10 +3,7 @@ package books_test
 import (
 	"books"
 	"cmp"
-	"encoding/json"
-	"io"
 	"net"
-	"net/http"
 	"slices"
 	"testing"
 )
@@ -62,18 +59,12 @@ func TestNewCatalog_CreatesEmptyCatalog(t *testing.T) {
 func TestGetBook_FindsBookInCatalogByID(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	want := books.Book{
-		ID:     "abc",
-		Title:  "In the Company of Cheerful Ladies",
-		Author: "Alexander McCall Smith",
-		Copies: 1,
-	}
 	got, ok := catalog.GetBook("abc")
 	if !ok {
 		t.Fatal("book not found")
 	}
-	if want != got {
-		t.Fatalf("want %#v, got %#v", want, got)
+	if got != ABC {
+		t.Fatalf("want %#v, got %#v", ABC, got)
 	}
 }
 
@@ -115,12 +106,7 @@ func TestAddBook_ReturnsErrorIfIDExists(t *testing.T) {
 	if !ok {
 		t.Fatal("book not present")
 	}
-	err := catalog.AddBook(books.Book{
-		ID:     "abc",
-		Title:  "In the Company of Cheerful Ladies",
-		Author: "Alexander McCall Smith",
-		Copies: 1,
-	})
+	err := catalog.AddBook(ABC)
 	if err == nil {
 		t.Fatal("want error for duplicate ID, got nil")
 	}
@@ -191,130 +177,65 @@ func TestSetCopies_IsRaceFree(t *testing.T) {
 	}
 }
 
-func TestServerListsAllBooks(t *testing.T) {
+func TestGetAllBooks_OnClientListsAllBooks(t *testing.T) {
 	t.Parallel()
-	addr := randomLocalAddr(t)
-	go func() {
-		err := books.ListenAndServe(addr, getTestCatalog())
-		if err != nil {
-			panic(err)
-		}
-	}()
-	resp, err := http.Get("http://" + addr + "/v1/list")
+	client := getTestClient(t)
+	got, err := client.GetAllBooks()
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected status %d", resp.StatusCode)
-	}
-	got := []books.Book{}
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = json.Unmarshal(data, &got)
-	if err != nil {
-		t.Fatalf("%v in %q", err, data)
 	}
 	assertTestBooks(t, got)
 }
 
-func TestFindFindsBookByID(t *testing.T) {
+func TestGetBook_OnClientFindsBookByID(t *testing.T) {
 	t.Parallel()
-	addr := randomLocalAddr(t)
-	go func() {
-		err := books.ListenAndServe(addr, getTestCatalog())
-		if err != nil {
-			panic(err)
-		}
-	}()
-	resp, err := http.Get("http://" + addr + "/v1/find/abc")
+	client := getTestClient(t)
+	got, err := client.GetBook("abc")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected status %d", resp.StatusCode)
-	}
-	got := books.Book{}
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = json.Unmarshal(data, &got)
-	if err != nil {
-		t.Fatalf("%v in %q", err, data)
-	}
-	want := books.Book{
-		Title:  "In the Company of Cheerful Ladies",
-		Author: "Alexander McCall Smith",
-		Copies: 1,
-		ID:     "abc",
-	}
-	if want != got {
-		t.Fatalf("want %#v, got %#v", want, got)
+	if got != ABC {
+		t.Fatalf("want %#v, got %#v", ABC, got)
 	}
 }
 
-func TestFindReturnsNotFoundWhenBookNotFound(t *testing.T) {
+func TestFindReturnsErrorWhenBookNotFound(t *testing.T) {
 	t.Parallel()
-	addr := randomLocalAddr(t)
-	go func() {
-		err := books.ListenAndServe(addr, getTestCatalog())
-		if err != nil {
-			panic(err)
-		}
-	}()
-	resp, err := http.Get("http://" + addr + "/v1/find/bogus")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusNotFound {
-		t.Fatalf("unexpected status %d", resp.StatusCode)
+	client := getTestClient(t)
+	_, err := client.GetBook("bogus")
+	if err == nil {
+		t.Error("want error when book not found, got nil")
 	}
 }
 
 func getTestCatalog() *books.Catalog {
 	catalog := books.NewCatalog()
-	err := catalog.AddBook(books.Book{
-		Title:  "In the Company of Cheerful Ladies",
-		Author: "Alexander McCall Smith",
-		Copies: 1,
-		ID:     "abc",
-	})
+	err := catalog.AddBook(ABC)
 	if err != nil {
 		panic(err)
 	}
-	err = catalog.AddBook(books.Book{
-		Title:  "White Heat",
-		Author: "Dominic Sandbrook",
-		Copies: 2,
-		ID:     "xyz",
-	})
+	err = catalog.AddBook(XYZ)
 	if err != nil {
 		panic(err)
 	}
 	return catalog
 }
 
+func getTestClient(t *testing.T) *books.Client {
+	t.Helper()
+	addr := randomLocalAddr(t)
+	go func() {
+		err := books.ListenAndServe(addr, getTestCatalog())
+		if err != nil {
+			panic(err)
+		}
+	}()
+	return books.NewClient(addr)
+}
+
 func assertTestBooks(t *testing.T, got []books.Book) {
 	t.Helper()
-	want := []books.Book{
-		{
-			Title:  "In the Company of Cheerful Ladies",
-			Author: "Alexander McCall Smith",
-			Copies: 1,
-			ID:     "abc",
-		},
-		{
-			Title:  "White Heat",
-			Author: "Dominic Sandbrook",
-			Copies: 2,
-			ID:     "xyz",
-		},
-	}
+	want := []books.Book{ABC, XYZ}
 	slices.SortFunc(got, func(a, b books.Book) int {
 		return cmp.Compare(a.Author, b.Author)
 	})
@@ -332,3 +253,19 @@ func randomLocalAddr(t *testing.T) string {
 	defer l.Close()
 	return l.Addr().String()
 }
+
+var (
+	ABC = books.Book{
+		Title:  "In the Company of Cheerful Ladies",
+		Author: "Alexander McCall Smith",
+		Copies: 1,
+		ID:     "abc",
+	}
+
+	XYZ = books.Book{
+		Title:  "White Heat",
+		Author: "Dominic Sandbrook",
+		Copies: 2,
+		ID:     "xyz",
+	}
+)

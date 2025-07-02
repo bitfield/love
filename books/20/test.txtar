@@ -1,0 +1,5 @@
+go test
+go build ./cmd/list
+go build ./cmd/find
+go build ./cmd/copies
+go build ./cmd/server

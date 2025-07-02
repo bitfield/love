@@ -20,6 +20,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		fmt.Printf("unexpected status %d", resp.StatusCode)
 		return

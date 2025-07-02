@@ -29,5 +29,3 @@ var catalog = []Book{
 func GetAllBooks() []Book {
 	return catalog
 }
-
-
