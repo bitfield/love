@@ -27,6 +27,7 @@ func main() {
 	}
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	book := books.Book{}
