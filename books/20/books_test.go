@@ -18,12 +18,12 @@ func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	path := t.TempDir() + "/catalog"
-	err := catalog.Sync(path)
+	catalog.Path = t.TempDir() + "/catalog"
+	err := catalog.Sync()
 	if err != nil {
 		t.Fatal(err)
 	}
-	newCatalog, err := books.OpenCatalog(path)
+	newCatalog, err := books.OpenCatalog(catalog.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,12 +34,12 @@ func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
 func TestSyncWritesCatalogDataToFile(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	path := t.TempDir() + "/catalog"
-	err := catalog.Sync(path)
+	catalog.Path = t.TempDir() + "/catalog"
+	err := catalog.Sync()
 	if err != nil {
 		t.Fatal(err)
 	}
-	newCatalog, err := books.OpenCatalog(path)
+	newCatalog, err := books.OpenCatalog(catalog.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -208,6 +208,90 @@ func TestFindReturnsErrorWhenBookNotFound(t *testing.T) {
 	}
 }
 
+func TestGetCopies_OnClientReturnsCopiesForBook(t *testing.T) {
+	t.Parallel()
+	client := getTestClient(t)
+	copies, err := client.GetCopies("abc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if copies != 1 {
+		t.Fatalf("want 1 copy, got %d", copies)
+	}
+}
+
+func TestGetCopies_OnClientErrorsWhenBookNotFound(t *testing.T) {
+	t.Parallel()
+	client := getTestClient(t)
+	_, err := client.GetCopies("bogus")
+	if err == nil {
+		t.Error("want error when book not found, got nil")
+	}
+}
+
+func TestAddCopies_CorrectlyUpdatesStockLevel(t *testing.T) {
+	t.Parallel()
+	client := getTestClient(t)
+	copies, err := client.GetCopies("abc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if copies != 1 {
+		t.Fatalf("want 1 copy before change, got %d", copies)
+	}
+	stock, err := client.AddCopies("abc", 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if stock != 3 {
+		t.Fatalf("want 3 copies after change, got %d", copies)
+	}
+}
+
+func TestAddCopies_OnClientErrorsWhenBookNotFound(t *testing.T) {
+	t.Parallel()
+	client := getTestClient(t)
+	_, err := client.AddCopies("bogus", 1)
+	if err == nil {
+		t.Error("want error when book not found, got nil")
+	}
+}
+
+func TestSubCopies_CorrectlyUpdatesStockLevel(t *testing.T) {
+	t.Parallel()
+	client := getTestClient(t)
+	copies, err := client.GetCopies("abc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if copies != 1 {
+		t.Fatalf("want 1 copy before change, got %d", copies)
+	}
+	stock, err := client.SubCopies("abc", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if stock != 0 {
+		t.Fatalf("want 0 copies after change, got %d", copies)
+	}
+}
+
+func TestSubCopies_FailsIfStockLevelToolow(t *testing.T) {
+	t.Parallel()
+	client := getTestClient(t)
+	copies, err := client.GetCopies("abc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if copies != 1 {
+		t.Fatalf("want 1 copy before change, got %d", copies)
+	}
+	_, err = client.SubCopies("abc", 2)
+	if err == nil {
+		t.Fatal("want error when stock level too low, got nil")
+	}
+}
+
 func getTestCatalog() *books.Catalog {
 	catalog := books.NewCatalog()
 	err := catalog.AddBook(ABC)
@@ -224,8 +308,10 @@ func getTestCatalog() *books.Catalog {
 func getTestClient(t *testing.T) *books.Client {
 	t.Helper()
 	addr := randomLocalAddr(t)
+	catalog := getTestCatalog()
+	catalog.Path = t.TempDir() + "/catalog"
 	go func() {
-		err := books.ListenAndServe(addr, getTestCatalog())
+		err := books.ListenAndServe(addr, catalog)
 		if err != nil {
 			panic(err)
 		}

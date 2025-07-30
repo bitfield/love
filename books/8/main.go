@@ -27,6 +27,6 @@ func TestBookToString_FormatsBookInfoAsString() {
 	want := "Sea Room by Adam Nicolson - 2 copies"
 	got := BookToString(input)
 	if want != got {
-		panic("BookToString: unexpected result")
+		panic("BookToString: wrong result")
 	}
 }

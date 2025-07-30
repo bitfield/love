@@ -32,6 +32,7 @@ func (book *Book) SetCopies(copies int) error {
 type Catalog struct {
 	mu   *sync.RWMutex
 	data map[string]Book
+	Path string
 }
 
 func NewCatalog() *Catalog {
@@ -52,6 +53,7 @@ func OpenCatalog(path string) (*Catalog, error) {
 	if err != nil {
 		return nil, err
 	}
+	catalog.Path = path
 	return catalog, nil
 }
 
@@ -61,10 +63,10 @@ func (catalog *Catalog) GetAllBooks() []Book {
 	return slices.Collect(maps.Values(catalog.data))
 }
 
-func (catalog *Catalog) Sync(path string) error {
+func (catalog *Catalog) Sync() error {
 	catalog.mu.RLock()
 	defer catalog.mu.RUnlock()
-	file, err := os.Create(path)
+	file, err := os.Create(catalog.Path)
 	if err != nil {
 		return err
 	}

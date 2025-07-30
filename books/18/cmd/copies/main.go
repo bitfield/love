@@ -28,7 +28,7 @@ func main() {
 		fmt.Printf("updating book: %v\n", err)
 		return
 	}
-	err = catalog.Sync("testdata/catalog")
+	err = catalog.Sync()
 	if err != nil {
 		fmt.Printf("writing catalog: %v\n", err)
 		return

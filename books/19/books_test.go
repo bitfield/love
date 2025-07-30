@@ -21,12 +21,12 @@ func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	path := t.TempDir() + "/catalog"
-	err := catalog.Sync(path)
+	catalog.Path = t.TempDir() + "/catalog"
+	err := catalog.Sync()
 	if err != nil {
 		t.Fatal(err)
 	}
-	newCatalog, err := books.OpenCatalog(path)
+	newCatalog, err := books.OpenCatalog(catalog.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,12 +37,12 @@ func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
 func TestSyncWritesCatalogDataToFile(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	path := t.TempDir() + "/catalog"
-	err := catalog.Sync(path)
+	catalog.Path = t.TempDir() + "/catalog"
+	err := catalog.Sync()
 	if err != nil {
 		t.Fatal(err)
 	}
-	newCatalog, err := books.OpenCatalog(path)
+	newCatalog, err := books.OpenCatalog(catalog.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,8 +194,10 @@ func TestSetCopies_IsRaceFree(t *testing.T) {
 func TestServerListsAllBooks(t *testing.T) {
 	t.Parallel()
 	addr := randomLocalAddr(t)
+	catalog := getTestCatalog()
+	catalog.Path = t.TempDir() + "/catalog"
 	go func() {
-		err := books.ListenAndServe(addr, getTestCatalog())
+		err := books.ListenAndServe(addr, catalog)
 		if err != nil {
 			panic(err)
 		}
@@ -223,8 +225,10 @@ func TestServerListsAllBooks(t *testing.T) {
 func TestFindFindsBookByID(t *testing.T) {
 	t.Parallel()
 	addr := randomLocalAddr(t)
+	catalog := getTestCatalog()
+	catalog.Path = t.TempDir() + "/catalog"
 	go func() {
-		err := books.ListenAndServe(addr, getTestCatalog())
+		err := books.ListenAndServe(addr, catalog)
 		if err != nil {
 			panic(err)
 		}
@@ -260,8 +264,10 @@ func TestFindFindsBookByID(t *testing.T) {
 func TestFindReturnsNotFoundWhenBookNotFound(t *testing.T) {
 	t.Parallel()
 	addr := randomLocalAddr(t)
+	catalog := getTestCatalog()
+	catalog.Path = t.TempDir() + "/catalog"
 	go func() {
-		err := books.ListenAndServe(addr, getTestCatalog())
+		err := books.ListenAndServe(addr, catalog)
 		if err != nil {
 			panic(err)
 		}
