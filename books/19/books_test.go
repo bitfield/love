@@ -14,8 +14,8 @@ import (
 func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	got := catalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := catalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
@@ -30,8 +30,8 @@ func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := newCatalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := newCatalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestSyncWritesCatalogDataToFile(t *testing.T) {
@@ -46,8 +46,8 @@ func TestSyncWritesCatalogDataToFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := newCatalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := newCatalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestNewCatalog_CreatesEmptyCatalog(t *testing.T) {
@@ -210,16 +210,16 @@ func TestServerListsAllBooks(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("unexpected status %d", resp.StatusCode)
 	}
-	got := []books.Book{}
+	bookList := []books.Book{}
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = json.Unmarshal(data, &got)
+	err = json.Unmarshal(data, &bookList)
 	if err != nil {
 		t.Fatalf("%v in %q", err, data)
 	}
-	assertTestBooks(t, got)
+	assertTestBooks(t, bookList)
 }
 
 func TestFindFindsBookByID(t *testing.T) {

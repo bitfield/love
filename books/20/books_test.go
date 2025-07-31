@@ -11,8 +11,8 @@ import (
 func TestGetAllBooks_ReturnsAllBooks(t *testing.T) {
 	t.Parallel()
 	catalog := getTestCatalog()
-	got := catalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := catalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
@@ -27,8 +27,8 @@ func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := newCatalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := newCatalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestSyncWritesCatalogDataToFile(t *testing.T) {
@@ -43,8 +43,8 @@ func TestSyncWritesCatalogDataToFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := newCatalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := newCatalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestNewCatalog_CreatesEmptyCatalog(t *testing.T) {
@@ -180,11 +180,11 @@ func TestSetCopies_IsRaceFree(t *testing.T) {
 func TestGetAllBooks_OnClientListsAllBooks(t *testing.T) {
 	t.Parallel()
 	client := getTestClient(t)
-	got, err := client.GetAllBooks()
+	bookList, err := client.GetAllBooks()
 	if err != nil {
 		t.Fatal(err)
 	}
-	assertTestBooks(t, got)
+	assertTestBooks(t, bookList)
 }
 
 func TestGetBook_OnClientFindsBookByID(t *testing.T) {

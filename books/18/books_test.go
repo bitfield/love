@@ -26,8 +26,8 @@ func TestOpenCatalog_ReadsSameDataWrittenBySync(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := newCatalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := newCatalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestSyncWritesCatalogDataToFile(t *testing.T) {
@@ -42,8 +42,8 @@ func TestSyncWritesCatalogDataToFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := newCatalog.GetAllBooks()
-	assertTestBooks(t, got)
+	bookList := newCatalog.GetAllBooks()
+	assertTestBooks(t, bookList)
 }
 
 func TestNewCatalog_CreatesEmptyCatalog(t *testing.T) {
