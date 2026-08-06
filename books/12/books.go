@@ -33,9 +33,9 @@ func GetAllBooks() []Book {
 	return catalog
 }
 
-func GetBook(ID string) (Book, bool) {
+func GetBook(id string) (Book, bool) {
 	for _, book := range catalog {
-		if book.ID == ID {
+		if book.ID == id {
 			return book, true
 		}
 	}

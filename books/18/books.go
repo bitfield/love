@@ -89,34 +89,34 @@ func (catalog *Catalog) AddBook(book Book) error {
 	return nil
 }
 
-func (catalog *Catalog) GetBook(ID string) (Book, bool) {
+func (catalog *Catalog) GetBook(id string) (Book, bool) {
 	catalog.mu.RLock()
 	defer catalog.mu.RUnlock()
-	book, ok := catalog.data[ID]
+	book, ok := catalog.data[id]
 	return book, ok
 }
 
-func (catalog *Catalog) GetCopies(ID string) (int, error) {
+func (catalog *Catalog) GetCopies(id string) (int, error) {
 	catalog.mu.RLock()
 	defer catalog.mu.RUnlock()
-	book, ok := catalog.data[ID]
+	book, ok := catalog.data[id]
 	if !ok {
-		return 0, fmt.Errorf("ID %q not found", ID)
+		return 0, fmt.Errorf("ID %q not found", id)
 	}
 	return book.Copies, nil
 }
 
-func (catalog *Catalog) SetCopies(ID string, copies int) error {
+func (catalog *Catalog) SetCopies(id string, copies int) error {
 	catalog.mu.Lock()
 	defer catalog.mu.Unlock()
-	book, ok := catalog.data[ID]
+	book, ok := catalog.data[id]
 	if !ok {
-		return fmt.Errorf("ID %q not found", ID)
+		return fmt.Errorf("ID %q not found", id)
 	}
 	err := book.SetCopies(copies)
 	if err != nil {
 		return err
 	}
-	catalog.data[ID] = book
+	catalog.data[id] = book
 	return nil
 }

@@ -18,8 +18,8 @@ func NewClient(addr string) *Client {
 	}
 }
 
-func (client *Client) MakeAPIRequest(URI string, result any) error {
-	resp, err := http.Get("http://" + client.addr + "/v1/" + URI)
+func (client *Client) MakeAPIRequest(uri string, result any) error {
+	resp, err := http.Get("http://" + client.addr + "/v1/" + uri)
 	if err != nil {
 		return err
 	}
@@ -41,9 +41,9 @@ func (client *Client) MakeAPIRequest(URI string, result any) error {
 	return nil
 }
 
-func (client *Client) GetBook(ID string) (Book, error) {
+func (client *Client) GetBook(id string) (Book, error) {
 	book := Book{}
-	err := client.MakeAPIRequest("find/"+ID, &book)
+	err := client.MakeAPIRequest("find/"+id, &book)
 	if err != nil {
 		return Book{}, err
 	}
@@ -59,17 +59,17 @@ func (client *Client) GetAllBooks() ([]Book, error) {
 	return bookList, nil
 }
 
-func (client *Client) GetCopies(ID string) (int, error) {
+func (client *Client) GetCopies(id string) (int, error) {
 	copies := 0
-	err := client.MakeAPIRequest("getcopies/"+ID, &copies)
+	err := client.MakeAPIRequest("getcopies/"+id, &copies)
 	if err != nil {
 		return 0, err
 	}
 	return copies, nil
 }
 
-func (client *Client) AddCopies(ID string, copies int) (int, error) {
-	URI := fmt.Sprintf("/addcopies/%s/%d", ID, copies)
+func (client *Client) AddCopies(id string, copies int) (int, error) {
+	URI := fmt.Sprintf("/addcopies/%s/%d", id, copies)
 	stock := 0
 	err := client.MakeAPIRequest(URI, &stock)
 	if err != nil {
@@ -78,8 +78,8 @@ func (client *Client) AddCopies(ID string, copies int) (int, error) {
 	return stock, nil
 }
 
-func (client *Client) SubCopies(ID string, copies int) (int, error) {
-	URI := fmt.Sprintf("/subcopies/%s/%d", ID, copies)
+func (client *Client) SubCopies(id string, copies int) (int, error) {
+	URI := fmt.Sprintf("/subcopies/%s/%d", id, copies)
 	stock := 0
 	err := client.MakeAPIRequest(URI, &stock)
 	if err != nil {

@@ -239,11 +239,11 @@ func TestAddCopies_CorrectlyUpdatesStockLevel(t *testing.T) {
 	if copies != 1 {
 		t.Fatalf("want 1 copy before change, got %d", copies)
 	}
-	stock, err := client.AddCopies("abc", 2)
+	copies, err = client.AddCopies("abc", 2)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if stock != 3 {
+	if copies != 3 {
 		t.Fatalf("want 3 copies after change, got %d", copies)
 	}
 }

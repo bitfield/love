@@ -48,8 +48,8 @@ func (catalog Catalog) GetAllBooks() []Book {
 	return slices.Collect(maps.Values(catalog))
 }
 
-func (catalog Catalog) GetBook(ID string) (Book, bool) {
-	book, ok := catalog[ID]
+func (catalog Catalog) GetBook(id string) (Book, bool) {
+	book, ok := catalog[id]
 	return book, ok
 }
 
@@ -62,16 +62,16 @@ func (catalog Catalog) AddBook(book Book) error {
 	return nil
 }
 
-func (catalog Catalog) SetCopies(ID string, copies int) error {
-	book, ok := catalog[ID]
+func (catalog Catalog) SetCopies(id string, copies int) error {
+	book, ok := catalog[id]
 	if !ok {
-		return fmt.Errorf("ID %q not found", ID)
+		return fmt.Errorf("ID %q not found", id)
 	}
 	err := book.SetCopies(copies)
 	if err != nil {
 		return err
 	}
-	catalog[ID] = book
+	catalog[id] = book
 	return nil
 }
 

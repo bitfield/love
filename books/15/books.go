@@ -24,8 +24,8 @@ func (catalog Catalog) GetAllBooks() []Book {
 	return slices.Collect(maps.Values(catalog))
 }
 
-func (catalog Catalog) GetBook(ID string) (Book, bool) {
-	book, ok := catalog[ID]
+func (catalog Catalog) GetBook(id string) (Book, bool) {
+	book, ok := catalog[id]
 	return book, ok
 }
 
