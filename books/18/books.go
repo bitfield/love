@@ -1,7 +1,7 @@
 package books
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"maps"
 	"os"
@@ -49,7 +49,7 @@ func OpenCatalog(path string) (*Catalog, error) {
 	}
 	defer file.Close()
 	catalog := NewCatalog()
-	err = json.NewDecoder(file).Decode(&catalog.data)
+	err = json.UnmarshalRead(file, &catalog.data)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (catalog *Catalog) Sync() error {
 		return err
 	}
 	defer file.Close()
-	err = json.NewEncoder(file).Encode(catalog.data)
+	err = json.MarshalWrite(file, catalog.data)
 	if err != nil {
 		return err
 	}

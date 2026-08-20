@@ -159,8 +159,8 @@ func TestSetCopies_OnCatalogModifiesSpecifiedBook(t *testing.T) {
 	}
 }
 
-func getTestCatalog() books.Catalog {
-	return books.Catalog{
+func getTestCatalog() *books.Catalog {
+	return &books.Catalog{
 		"abc": {
 			Title:  "In the Company of Cheerful Ladies",
 			Author: "Alexander McCall Smith",

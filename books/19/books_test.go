@@ -3,7 +3,7 @@ package books_test
 import (
 	"books"
 	"cmp"
-	"encoding/json"
+	"encoding/json/v2"
 	"io"
 	"net"
 	"net/http"

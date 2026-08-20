@@ -1,7 +1,7 @@
 package books
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"net/http"
 )
@@ -10,7 +10,7 @@ func ListenAndServe(addr string, catalog *Catalog) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/list", func(w http.ResponseWriter, r *http.Request) {
 		books := catalog.GetAllBooks()
-		err := json.NewEncoder(w).Encode(books)
+		err := json.MarshalWrite(w, books)
 		if err != nil {
 			panic(err)
 		}
@@ -22,7 +22,7 @@ func ListenAndServe(addr string, catalog *Catalog) error {
 			http.Error(w, fmt.Sprintf("%q not found", ID), http.StatusNotFound)
 			return
 		}
-		err := json.NewEncoder(w).Encode(book)
+		err := json.MarshalWrite(w, book)
 		if err != nil {
 			panic(err)
 		}
